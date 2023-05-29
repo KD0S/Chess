@@ -26,7 +26,7 @@ def main():
     gs = ChessEngine.GameState()
     loadImages()
     running = True
-    validMoves = gs.getValidMoves()
+    validMoves = gs.getValidMoves(gs)
     moveMade = False
     clock.tick(MAX_FPS)
     updateDisplay(screen, gs)
@@ -51,8 +51,8 @@ def main():
                 endSq = (row, col)
                 if startSq != endSq:
                     move = ChessEngine.Move(startSq, endSq, gs.board)
-                    print(move.getChessNotation())
                     if move in validMoves:
+                        print(move.getChessNotation())
                         gs.makeMove(move)
                         moveMade = True
                         updateDisplay(screen, gs)
@@ -64,7 +64,7 @@ def main():
                     updateDisplay(screen, gs)
             
             if moveMade:
-                validMoves = gs.getValidMoves()
+                validMoves = gs.getValidMoves(gs)
                 moveMade = False
 
 def highlight_cells(screen, cells, board):
