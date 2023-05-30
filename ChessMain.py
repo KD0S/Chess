@@ -42,7 +42,7 @@ def main():
                 row = location[1]//SQ_SIZE
                 startSq = (row, col)
                 cells = gs.displayPossibleMoves(row, col, validMoves)
-                highlight_cells(screen, cells, gs.board)
+                highlight_cells(screen, cells, gs.board, startSq)
                 
             if e.type == p.MOUSEBUTTONUP:
                 location = p.mouse.get_pos()
@@ -67,10 +67,15 @@ def main():
                 validMoves = gs.getValidMoves(gs)
                 moveMade = False
 
-def highlight_cells(screen, cells, board):
+def highlight_cells(screen, cells, board, startSq):
     drawBoard(screen)
+    s = p.Surface((SQ_SIZE, SQ_SIZE))
+    s.set_alpha(100)
     for cell in cells:
-         p.draw.rect(screen, (0, 240, 0, 0), p.Rect(cell[1]*SQ_SIZE, cell[0]*SQ_SIZE, SQ_SIZE, SQ_SIZE))
+        s.fill((0, 255, 0))
+        screen.blit(s, (cell[1]*SQ_SIZE, cell[0]*SQ_SIZE))
+    s.fill((0,0,255))
+    screen.blit(s, (startSq[1]*SQ_SIZE, startSq[0]*SQ_SIZE))
     drawPieces(screen, board)
     p.display.update() 
                       
@@ -101,6 +106,6 @@ def drawGameState(screen, gs):
 
 if __name__ == '__main__':
     main()
-    
+  
     
     

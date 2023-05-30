@@ -17,7 +17,9 @@ class GameState():
         self.moveFunctions = {"p": MoveFunctions.getPawnMoves, "R": MoveFunctions.getRookMoves,
                               "N": MoveFunctions.getKnightMoves, "B": MoveFunctions.getBishopMoves,
                               "K": MoveFunctions.getKingMoves, "Q": MoveFunctions.getQueenMoves}
-    
+        self.whiteKingLocation = (7, 4)
+        self.blackKingLocation = (0, 4)
+        
     def makeMove(self, move):
         if move.pieceMoved == '__':
             pass
@@ -26,6 +28,11 @@ class GameState():
             self.board[move.endRow][move.endCol] = move.pieceMoved
             self.moveLogs.append(move)
             self.whiteToMove = not self.whiteToMove
+            if move.pieceMoved == "wK":
+                self.whiteKingLocation = (move.endRow, move.endCol)
+            elif move.pieceMoved == "bK":
+                self.blackKingLocation = (move.endRow, move.endCol)
+            
     
     def undoMove(self):
         if len(self.moveLogs) != 0:
@@ -33,6 +40,10 @@ class GameState():
             self.board[move.startRow][move.startCol] = move.pieceMoved
             self.board[move.endRow][move.endCol] = move.pieceCaptured
             self.whiteToMove = not self.whiteToMove
+            if move.pieceMoved == "wK":
+                self.whiteKingLocation = (move.startRow, move.startCol)
+            elif move.pieceMoved == "bK":
+                self.blackKingLocation = (move.startRow, move.startCol)
     
     def getValidMoves(self, gs):
         return self.getAllPossibleMoves(gs)
@@ -47,7 +58,6 @@ class GameState():
                     self.moveFunctions[piece](gs, r, c, moves)
         return moves
                         
-    
     def displayPossibleMoves(self, r, c, moves):
         cells_to_be_highlighted = []
         for move in moves:
