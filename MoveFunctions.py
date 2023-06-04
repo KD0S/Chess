@@ -155,7 +155,7 @@ def getKingMoves(gs, r, c, moves):
         cols = [1, -1, 0, 0, 1, -1, 1, -1]
         
         for i, j in zip(rows, cols):
-             if r+i >= 0 and r+i <= 7 and c+i <= 7 and c+i >= 0:
+             if r+i >= 0 and r+i <= 7 and c+j <= 7 and c+j >= 0:
                 if gs.board[r+i][c+j] == "__":
                     moves.append(Move((r,c), (r+i, c+j), gs.board))
                 elif gs.board[r+i][c+j][0] == "b" and gs.whiteToMove or gs.board[r+i][c+j][0] == "w" and not gs.whiteToMove:
