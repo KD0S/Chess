@@ -1,6 +1,7 @@
 import pygame as p
 import ChessEngine
 from Move import Move
+import time
 
 WIDTH = HEIGHT = 512
 DIMENSION = 8
@@ -31,12 +32,13 @@ def main():
     gs = ChessEngine.GameState()
     loadImages()
     p.display.set_icon(IMAGES['wN'])
+    display_rankFile(screen)
     running = True
     validMoves = gs.getValidMoves(gs)
     moveMade = False
+    check = False 
     clock.tick(MAX_FPS)
     updateDisplay(screen, gs)
-    
     while running:
         for e in p.event.get():      
             
@@ -51,7 +53,8 @@ def main():
                     continue
                 startSq = (row, col)
                 cells = gs.displayPossibleMoves(row, col, validMoves) 
-                highlight_cells(screen, cells, gs.board, startSq)
+                highlight_cells(screen, cells, gs.board, startSq, check, gs)
+
                 
             elif e.type == p.MOUSEBUTTONUP:
                 location = p.mouse.get_pos()
@@ -65,6 +68,11 @@ def main():
                     if move in validMoves:
                         print(move.getChessNotation())
                         gs.makeMove(move)
+                        if move.pieceCaptured[1] == "K":
+                            win(screen, move)
+                            time.sleep(3)
+                            running = False
+                            break
                         moveMade = True
                         updateDisplay(screen, gs)
                 
@@ -76,17 +84,32 @@ def main():
             
             if moveMade:
                 validMoves = gs.getValidMoves(gs)
+                ally = "w" if gs.whiteToMove else "b"
+                if gs.isCheck(ally):
+                    check = True
+                else:
+                    check = False
                 moveMade = False
 
-def highlight_cells(screen, cells, board, startSq):
+def highlight_cells(screen, cells, board, startSq, check, gs):
     drawBoard(screen)
     for cell in cells:
         highlight(screen, 100, (0,255,0), cell[1], cell[0])
     highlight(screen, 100, (0,0,255), startSq[1], startSq[0])
+    if check == True:
+        highlight_check(screen, gs)
     drawPieces(screen, board)
     p.display.update()
 
-
+def display_rankFile(screen):
+    font = p.font.SysFont(None, 24)
+    for i in range(8):
+        img = font.render(Move.rowToRanks[i], True, (255, 255, 255))
+        screen.blit(img, (20, i*64+60))
+    for i in range(8):
+        img = font.render(Move.colsToFiles[i], True, (255, 255, 255))
+        screen.blit(img, (i*64+70, 580))
+    
 def highlight(screen, alpha, color, x, y):
     s = p.Surface((SQ_SIZE, SQ_SIZE))
     s.set_alpha(alpha)
@@ -96,6 +119,21 @@ def highlight(screen, alpha, color, x, y):
  
 def updateDisplay(screen, gs):
     drawGameState(screen, gs)
+    p.display.update()
+
+def win(screen, move):
+    if move.pieceCaptured[0] == "w":
+        text = "Black Wins!"
+        textColor = (0, 0, 0)
+        bgColor = (255, 255, 255)
+    else:
+        text = "White Wins!"
+        textColor = (255, 255, 255)
+        bgColor = (0, 0, 0)
+    screen.fill(bgColor)
+    font = p.font.SysFont("Arial", 60)
+    img = font.render(text, True, textColor)
+    screen.blit(img, (256 , 200))
     p.display.update()
 
 
@@ -114,15 +152,18 @@ def drawPieces(screen, board):
             if piece != "__":
                 screen.blit(IMAGES[piece],  p.Rect(c*SQ_SIZE+50, r*SQ_SIZE+50, SQ_SIZE, SQ_SIZE))
 
+def highlight_check(screen, gs):
+    ally = "w" if gs.whiteToMove else "b"
+    if ally == "w":
+        Kr, Kc = gs.whiteKingLocation
+    else:
+        Kr, Kc = gs.blackKingLocation
+    highlight(screen, 150, (255, 0, 0), Kc, Kr)
 
 def drawGameState(screen, gs):
     drawBoard(screen)
     drawPieces(screen, gs.board)
-
-def draw_text(screen, text, text_col, x, y):
-    font = p.font.SysFont("Arial", 12)
-    img = font.render(text, True, text_col)
-    screen.blit(img, (x, y))
+    
 
 if __name__ == '__main__':
     main()

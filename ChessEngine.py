@@ -53,6 +53,7 @@ class GameState():
             ally = "w"
         else:
             ally = "b"
+        check = False
         if self.isCheck(ally):
             toBeRemoved = []
             for move in moves:
