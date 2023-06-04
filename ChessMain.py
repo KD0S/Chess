@@ -3,6 +3,7 @@ import ChessEngine
 from Move import Move
 import time
 from utils import Utils
+from checks import isCheck
 
 WIDTH = HEIGHT = 512
 DIMENSION = 8
@@ -86,7 +87,7 @@ def main():
             if moveMade:
                 validMoves = gs.getValidMoves(gs)
                 ally = "w" if gs.whiteToMove else "b"
-                if gs.isCheck(ally):
+                if isCheck(gs, ally):
                     check = True
                 else:
                     check = False

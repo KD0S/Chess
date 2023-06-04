@@ -1,4 +1,5 @@
 from Move import Move
+from checks import isCheck
 
 def getPawnMoves(gs, r, c, moves):
     if gs.whiteToMove:
@@ -154,9 +155,23 @@ def getKingMoves(gs, r, c, moves):
         rows = [0, 0, 1, -1, 1, 1, -1, -1]
         cols = [1, -1, 0, 0, 1, -1, 1, -1]
         
+        kingMoves = []
+        
         for i, j in zip(rows, cols):
              if r+i >= 0 and r+i <= 7 and c+j <= 7 and c+j >= 0:
                 if gs.board[r+i][c+j] == "__":
-                    moves.append(Move((r,c), (r+i, c+j), gs.board))
+                    kingMoves.append(Move((r,c), (r+i, c+j), gs.board))
                 elif gs.board[r+i][c+j][0] == "b" and gs.whiteToMove or gs.board[r+i][c+j][0] == "w" and not gs.whiteToMove:
-                    moves.append(Move((r,c), (r+i, c+j), gs.board))
+                    kingMoves.append(Move((r,c), (r+i, c+j), gs.board))
+                    
+        ally = "w" if gs.whiteToMove else "b"
+        toBeRemoved = []
+        for move in kingMoves:
+            gs.makeMove(move)
+            if isCheck(gs, ally):
+                toBeRemoved.append(move)
+            gs.undoMove()
+        for move in toBeRemoved:
+            kingMoves.remove(move)            
+        for move in kingMoves:
+            moves.append(move)
