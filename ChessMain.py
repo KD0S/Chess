@@ -10,8 +10,7 @@ DIMENSION = 8
 SQ_SIZE = HEIGHT // DIMENSION
 MAX_FPS = 15
 IMAGES = {}
-X_OFFSET = 100
-y_OFFSET = 100
+
 
 def loadImages():
     pieces = ['bN', 'bQ', 'bK',
@@ -23,24 +22,25 @@ def loadImages():
         IMAGES[piece] = p.transform.scale(p.image.load("./images/"+piece+".png"), (SQ_SIZE, SQ_SIZE))
     
 
-def main():
-    
+def main(player):
     p.init()
     screen = p.display.set_mode((800, 700))
     p.display.set_caption('Chess')
     clock = p.time.Clock()
     screen.fill(p.Color("black"))
-    gs = ChessEngine.GameState()
+    gs = ChessEngine.GameState(player)
     loadImages()
     utils = Utils(p, DIMENSION, SQ_SIZE, IMAGES)
     p.display.set_icon(IMAGES['wN'])
-    utils.display_rankFile(screen)
+    utils.display_rankFile(screen, player)
     running = True
     validMoves = gs.getValidMoves(gs)
     moveMade = False
     check = False
+    selectedCells = []
+    currSq = ()
     clock.tick(MAX_FPS)
-    utils.updateDisplay(screen, gs)
+    utils.drawGameState(screen, gs, currSq, validMoves, check)
     while running:
         for e in p.event.get():      
             
@@ -48,41 +48,32 @@ def main():
                 running = False
                 
             elif e.type == p.MOUSEBUTTONDOWN:
-                location = p.mouse.get_pos()
-                col = (location[0]-50)//SQ_SIZE
-                row = (location[1]-50)//SQ_SIZE
-                if row > 7 or row < 0 or col > 7 or col < 0:
+                row, col = utils.GetMouseXY()
+                if row==-1 and col==-1:
                     continue
-                startSq = (row, col)
-                cells = gs.displayPossibleMoves(row, col, validMoves) 
-                utils.highlight_cells(screen, cells, gs.board, startSq, check, gs)
-
                 
-            elif e.type == p.MOUSEBUTTONUP:
-                location = p.mouse.get_pos()
-                col = (location[0]-50)//SQ_SIZE
-                row = (location[1]-50)//SQ_SIZE
-                if row > 7 or row < 0 or col > 7 or col < 0:
-                    continue
-                endSq = (row, col)
-                if startSq != endSq:
-                    move = ChessEngine.Move(startSq, endSq, gs.board)
+                if (row, col) == currSq:
+                    currSq = ()
+                    selectedCells = []
+                else:
+                    currSq = (row, col)
+                    selectedCells.append(currSq)
+                        
+                if len(selectedCells)==2:
+                    move = Move(selectedCells[0], selectedCells[1], gs.board)
+                    selectedCells = []
+                    currSq = ()
                     if move in validMoves:
                         print(move.getChessNotation())
                         gs.makeMove(move)
-                        if move.pieceCaptured[1] == "K":
-                            utils.win(screen, move)
-                            time.sleep(3)
-                            running = False
-                            break
                         moveMade = True
-                        utils.updateDisplay(screen, gs)
                 
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z:
                     gs.undoMove()
                     moveMade = True
-                    utils.updateDisplay(screen, gs)
+                    selectedCells = []
+                    currSq = ()
             
             if moveMade:
                 validMoves = gs.getValidMoves(gs)
@@ -91,10 +82,15 @@ def main():
                     check = True
                 else:
                     check = False
+                if len(validMoves) == 0:
+                    utils.win(screen, move, check)
+                    time.sleep(3)
+                    running = False
+                    break
                 moveMade = False
-
+                
+        utils.drawGameState(screen, gs, currSq, validMoves, check)
 if __name__ == '__main__':
     main()
   
-    
     

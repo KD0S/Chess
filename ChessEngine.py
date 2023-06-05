@@ -1,9 +1,8 @@
 import MoveFunctions
 from checks import isCheck
-from Move import Move
 
 class GameState():
-    def __init__(self):
+    def __init__(self, player):
         self.board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
                       ['bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp'],
                       ['__', '__', '__', '__', '__', '__', '__', '__'],
@@ -11,7 +10,8 @@ class GameState():
                       ['__', '__', '__', '__', '__', '__', '__', '__'],
                       ['__', '__', '__', '__', '__', '__', '__', '__'],
                       ['wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp'],
-                      ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
+                      ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']] 
+
         
         self.whiteToMove = True
         self.moveLogs = []
@@ -54,6 +54,7 @@ class GameState():
             ally = "w"
         else:
             ally = "b"
+        check = False
         if  isCheck(gs, ally):
             toBeRemoved = []
             for move in moves:
@@ -63,8 +64,6 @@ class GameState():
                 self.undoMove()
             for move in toBeRemoved:
                 moves.remove(move)
-        if (len(moves) == 0):
-            print("CheckMate! Press Z to undo moves")
         return moves
     
     def getAllPossibleMoves(self, gs):
