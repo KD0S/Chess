@@ -12,7 +12,8 @@ class Move():
         self.endRow = endSq[0]
         self.endCol = endSq[1]
         self.enPassant = False
-        self.castling = False 
+        self.ksCastling = False
+        self.qsCastling = False
         self.pieceMoved = board[self.startRow][self.startCol]
         self.pieceCaptured = board[self.endRow][self.endCol]
         self.moveId = self.startRow*1000 + self.startCol*100 + self.endRow*10 + self.endCol
@@ -23,13 +24,23 @@ class Move():
         return False
     
     def getChessNotation(self):
+        if self.enPassant:
+            return self.colsToFiles[self.startCol]+'X'+self.getRankFile(self.endRow, self.endCol)
+        elif self.ksCastling:
+            return "O-O"
+        elif self.qsCastling:
+            return "O-O-O"
+            
         if self.pieceCaptured == "__":
             if self.pieceMoved[1] == "p":
                 return self.getRankFile(self.endRow, self.endCol)
             else:
                 return self.pieceMoved[1]+self.getRankFile(self.endRow, self.endCol)
         else:
-            return self.pieceMoved[1]+'X'+self.getRankFile(self.endRow, self.endCol)
+            if self.pieceMoved[1] == "p":
+                return self.colsToFiles[self.startCol]+'X'+self.getRankFile(self.endRow, self.endCol)
+            else:
+                return self.pieceMoved[1]+'X'+self.getRankFile(self.endRow, self.endCol)
     
     def getRankFile(self,r ,c):
         return self.colsToFiles[c] + self.rowToRanks[r]

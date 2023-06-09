@@ -15,6 +15,16 @@ def getPawnMoves(gs, r, c, moves, player):
             if c+1<=7:
                 if gs.board[r-1][c+1][0] == enemy:
                     moves.append(Move((r,c), (r-1, c+1), gs.board))
+                    
+        # check for en-passant
+        if len(gs.moveLogs) > 0:
+            move = gs.moveLogs[-1]
+            if move.pieceMoved == gs.enemy+"p" and move.endRow == move.startRow+2:
+                pr, pc = move.endRow, move.endCol
+                if r == pr and ((c+1 <= 7 and pc == c+1) or (c-1 >= 0 and pc == c-1)):
+                    move = Move((r,c), (r-1, pc), gs.board)
+                    moves.append(move)
+            
     else:
         if r+1 < len(gs.board):    
             if gs.board[r+1][c] == "__":
@@ -27,7 +37,15 @@ def getPawnMoves(gs, r, c, moves, player):
             if c+1<=7:
                 if gs.board[r+1][c+1][0] == player:
                     moves.append(Move((r,c), (r+1, c+1), gs.board))
-    
+            
+              # check for en-passant
+            if len(gs.moveLogs) > 0:
+                move = gs.moveLogs[-1]
+                if move.pieceMoved == gs.player+"p" and move.endRow == move.startRow-2:
+                    pr, pc = move.endRow, move.endCol
+                    if r == pr and ((c+1 <= 7 and pc == c+1) or (c-1 >= 0 and pc == c-1)):
+                        move = Move((r,c), (pr+1, pc), gs.board)
+                        moves.append(move)
         
                         
 def getRookMoves(gs, r, c, moves, player):              

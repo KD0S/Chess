@@ -64,8 +64,8 @@ def main(player):
                     selectedCells = []
                     currSq = ()
                     if move in validMoves:
-                        # print(move.getChessNotation())
                         gs.makeMove(move)
+                        print(move.getChessNotation())  
                         moveMade = True
                 
             elif e.type == p.KEYDOWN:
@@ -87,6 +87,7 @@ def main(player):
                     time.sleep(3)
                     running = False
                     break
+                
                 # is player in check?
                 gs.playerToMove = not gs.playerToMove
                 turn, ally = utils.getTurnAlly(gs.playerToMove)
