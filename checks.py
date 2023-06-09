@@ -1,12 +1,6 @@
-def isCheck(gs, ally):        
-    # get king square
-    if ally == 'w':  
-        (Kr, Kc) = gs.whiteKingLocation
-    else:
-        (Kr, Kc) = gs.blackKingLocation
-        
+def isCheck(gs, ally, player, Kr, Kc):    
     # Check for Pawn
-    if ally == 'b':
+    if ally != player:
         if Kr+1 <= 7 and Kc+1 <= 7 and gs.board[Kr+1][Kc+1][0] != ally:
             if gs.board[Kr+1][Kc+1][1] == 'p':
                 return True

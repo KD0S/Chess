@@ -12,10 +12,12 @@ bgColor = (118,150,86)
 screen.fill(bgColor)
 font = p.font.SysFont(None, 100)
 img = font.render("Chess", True, textColor)
-screen.blit(img, (256 , 200))
+screen.blit(img, (250 , 200))
 font = p.font.SysFont(None, 40)
-img = font.render("Press S to Start!", True, textColor)
-screen.blit(img, (256 , 400))
+img = font.render("Press W to Play as White!", True, textColor)
+screen.blit(img, (200 , 400))
+img = font.render("Press B to Play as Black!", True, textColor)
+screen.blit(img, (200 , 350))
 p.display.update()
 
 while running:
@@ -25,7 +27,11 @@ while running:
                 running = False
             
             if e.type == p.KEYDOWN:
-                if e.key == p.K_s:
+                if e.key == p.K_w:
+                    ChessMain.main('w')
+                    running = False
+                    break
+                elif e.key == p.K_b:
                     ChessMain.main('b')
                     running = False
                     break

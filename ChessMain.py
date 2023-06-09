@@ -1,9 +1,9 @@
 import pygame as p
 import ChessEngine
 from Move import Move
-import time
 from utils import Utils
 from checks import isCheck
+import time
 
 WIDTH = HEIGHT = 512
 DIMENSION = 8
@@ -30,9 +30,9 @@ def main(player):
     screen.fill(p.Color("black"))
     gs = ChessEngine.GameState(player)
     loadImages()
-    utils = Utils(p, DIMENSION, SQ_SIZE, IMAGES)
+    utils = Utils(p, DIMENSION, SQ_SIZE, IMAGES, player, screen)
     p.display.set_icon(IMAGES['wN'])
-    utils.display_rankFile(screen, player)
+    utils.display_rankFile(player)
     running = True
     validMoves = gs.getValidMoves(gs)
     moveMade = False
@@ -40,7 +40,7 @@ def main(player):
     selectedCells = []
     currSq = ()
     clock.tick(MAX_FPS)
-    utils.drawGameState(screen, gs, currSq, validMoves, check)
+    utils.drawGameState(gs, currSq, validMoves, check)
     while running:
         for e in p.event.get():      
             
@@ -64,7 +64,7 @@ def main(player):
                     selectedCells = []
                     currSq = ()
                     if move in validMoves:
-                        print(move.getChessNotation())
+                        # print(move.getChessNotation())
                         gs.makeMove(move)
                         moveMade = True
                 
@@ -77,19 +77,29 @@ def main(player):
             
             if moveMade:
                 validMoves = gs.getValidMoves(gs)
-                ally = "w" if gs.whiteToMove else "b"
-                if isCheck(gs, ally):
-                    check = True
-                else:
-                    check = False
+                # is opponent in check?
+                gs.playerToMove = not gs.playerToMove
+                turn, ally = utils.getTurnAlly(gs.playerToMove)
+                (Kr, Kc) = gs.getKingLocation(ally)
+                check = isCheck(gs, ally, player, Kr, Kc)
+                if check:
+                    utils.win(turn, check)
+                    time.sleep(3)
+                    running = False
+                    break
+                # is player in check?
+                gs.playerToMove = not gs.playerToMove
+                turn, ally = utils.getTurnAlly(gs.playerToMove)
+                (Kr, Kc) = gs.getKingLocation(ally)
+                check = isCheck(gs, ally, player, Kr, Kc)
                 if len(validMoves) == 0:
-                    utils.win(screen, move, check)
+                    utils.win(turn, check)
                     time.sleep(3)
                     running = False
                     break
                 moveMade = False
                 
-        utils.drawGameState(screen, gs, currSq, validMoves, check)
+        utils.drawGameState(gs, currSq, validMoves, check)
 if __name__ == '__main__':
     main()
   
