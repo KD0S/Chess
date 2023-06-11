@@ -10,20 +10,23 @@ class Utils():
         self.IMAGES = IMAGES
         self.player = player
         self.screen = screen
+        self.OFFSET = 25
     
     def drawBoard(self):
         clrs = [colors.darkGreen, colors.lightGreen]
         for r in range(self.DIMENSION):
             for c in range(self.DIMENSION):
                 clr = clrs[((r+c)%2)]
-                self.p.draw.rect(self.screen, clr, self.p.Rect(c*self.SQ_SIZE+50, r*self.SQ_SIZE+50, self.SQ_SIZE, self.SQ_SIZE))
+                self.p.draw.rect(self.screen, clr, self.p.Rect(c*self.SQ_SIZE+self.OFFSET, 
+                    r*self.SQ_SIZE+self.OFFSET, self.SQ_SIZE, self.SQ_SIZE))
                    
     def drawPieces(self, board): 
         for r in range(self.DIMENSION):
             for c in range(self.DIMENSION):
                 piece = board[r][c]
                 if piece != "__":
-                    self.screen.blit(self.IMAGES[piece],  self.p.Rect(c*self.SQ_SIZE+50, r*self.SQ_SIZE+50, self.SQ_SIZE, self.SQ_SIZE))
+                    self.screen.blit(self.IMAGES[piece],  self.p.Rect(c*self.SQ_SIZE+self.OFFSET, 
+                            r*self.SQ_SIZE+self.OFFSET, self.SQ_SIZE, self.SQ_SIZE))
     
     def drawGameState(self, gs, currSq, validMoves, check):
         self.drawBoard()
@@ -47,18 +50,18 @@ class Utils():
         for i in range(8):
             clr = clrs[i%2]
             img = font.render(ranks[i], True, clr)
-            self.screen.blit(img, (20, i*64+60))
+            self.screen.blit(img, (8, i*64+2*self.OFFSET))
         for i in range(8):
             clr = clrs[(i+7)%2]
             img = font.render(files[i], True, clr)
-            self.screen.blit(img, (i*64+70, 580))
+            self.screen.blit(img, (i*64+2*self.OFFSET, 522.5+self.OFFSET))
         
                 
     def highlight(self, alpha, color, x, y):
         s = self.p.Surface((self.SQ_SIZE, self.SQ_SIZE))
         s.set_alpha(alpha)
         s.fill(color)
-        self.screen.blit(s, (x*self.SQ_SIZE+50, y*self.SQ_SIZE+50))
+        self.screen.blit(s, (x*self.SQ_SIZE+self.OFFSET, y*self.SQ_SIZE+self.OFFSET))
             
     def highlight_cells(self, cells, board, startSq, check, gs):
         self.drawBoard()
@@ -105,8 +108,8 @@ class Utils():
     
     def GetMouseXY(self):
         location = self.p.mouse.get_pos()
-        col = (location[0]-50)//self.SQ_SIZE
-        row = (location[1]-50)//self.SQ_SIZE
+        col = (location[0]-self.OFFSET)//self.SQ_SIZE
+        row = (location[1]-self.OFFSET)//self.SQ_SIZE
         if row > 7 or row < 0 or col > 7 or col < 0:
             row, col = -1, -1
             return row, col

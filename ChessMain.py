@@ -19,12 +19,14 @@ def loadImages():
               'wB', 'wR', 'wp']
     
     for piece in pieces:
-        IMAGES[piece] = p.transform.scale(p.image.load("./images/"+piece+".png"), (SQ_SIZE, SQ_SIZE))
-    
+        image = p.image.load("./images/"+piece+".png").convert_alpha()
+        image = p.transform.scale(image, (SQ_SIZE, SQ_SIZE))
+        IMAGES[piece] = image
+
 
 def main(player):
     p.init()
-    screen = p.display.set_mode((800, 700))
+    screen = p.display.set_mode((700, 600))
     p.display.set_caption('Chess')
     clock = p.time.Clock()
     screen.fill(p.Color("black"))
