@@ -2,6 +2,7 @@ import pygame as p
 import ChessEngine
 from Move import Move
 from utils import Utils
+from utils import Clock
 from checks import isCheck
 import time
 
@@ -28,7 +29,6 @@ def main(player):
     p.init()
     screen = p.display.set_mode((700, 600))
     p.display.set_caption('Chess')
-    clock = p.time.Clock()
     screen.fill(p.Color("black"))
     gs = ChessEngine.GameState(player)
     loadImages()
@@ -41,9 +41,38 @@ def main(player):
     check = False
     selectedCells = []
     currSq = ()
-    clock.tick(MAX_FPS)
     utils.drawGameState(gs, currSq, validMoves, check)
+    player2Clock =  Clock(p, screen, 8.3, 0)
+    player1Clock =  Clock(p, screen, 8.3, 7.5)
+    player1Time = 300
+    player2Time = 300
+    player1Clock.draw(player1Time)
+    player2Clock.draw(player2Time)
+    clock = p.time.Clock()
+    startTime = time.time()
     while running:
+        clock.tick(10)
+        if gs.playerToMove:
+            player1Time -= time.time() - startTime
+            if player1Time <= 0:
+                utils.win(gs.enemy, False, True)
+                running = False
+                time.sleep(3)
+                break
+            player1Clock.draw(player1Time)
+            
+        else:
+            player2Time -= time.time() - startTime
+            if player2Time <= 0:
+                utils.win(gs.player, False, True)
+                running = False
+                time.sleep(3)
+                break
+            player2Clock.draw(player2Time)
+            
+        
+        startTime = time.time()
+        
         for e in p.event.get():
 
             if e.type == p.QUIT:
@@ -92,7 +121,7 @@ def main(player):
                 (Kr, Kc) = gs.getKingLocation(ally)
                 check = isCheck(gs, ally, player, Kr, Kc)
                 if check:
-                    utils.win(turn, check)
+                    utils.win(turn, check, False)
                     time.sleep(3)
                     running = False
                     break
@@ -103,7 +132,7 @@ def main(player):
                 (Kr, Kc) = gs.getKingLocation(ally)
                 check = isCheck(gs, ally, player, Kr, Kc)
                 if len(validMoves) == 0:
-                    utils.win(turn, check)
+                    utils.win(turn, check, False)
                     time.sleep(3)
                     running = False
                     break

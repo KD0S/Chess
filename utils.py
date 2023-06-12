@@ -1,5 +1,6 @@
 from Move import Move
 import colors
+import time
 
 class Button():
     def __init__(self, x, y, image, name):
@@ -12,6 +13,27 @@ class Button():
     def draw(self, screen, p):
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
+class Clock():
+    def __init__(self, p, screen, x, y):
+       self.x = x
+       self.y = y
+       self.p = p
+       self.screen = screen
+       self.SQ_SIZE = 64
+       self.OFFSET = 25
+       self.s = self.p.Surface((self.SQ_SIZE+5, self.SQ_SIZE/2))
+    
+    def draw(self, text):
+        self.s.fill(colors.darkGreen)
+        self.screen.blit(self.s, (self.x*self.SQ_SIZE+self.OFFSET+20, self.y*self.SQ_SIZE+self.OFFSET))
+        font = self.p.font.Font('./fonts/Poppins-Bold.ttf', 22)
+        text = time.strftime("%M:%S", time.gmtime(text))
+        img = font.render(text, True, colors.lightGreen)
+        self.screen.blit(img, (self.x*self.SQ_SIZE+self.OFFSET+20, self.y*self.SQ_SIZE+self.OFFSET))
+        self.update()
+        
+    def update(self):
+        self.p.display.update(self.s.get_rect())
 
 
 class Utils():
@@ -50,7 +72,7 @@ class Utils():
         self.p.display.update()
 
     def display_rankFile(self, player):
-        font = self.p.font.SysFont(None, 26)
+        font = self.p.font.Font('./fonts/Poppins-Bold.ttf', 20)
         clrs = [colors.darkGreen, colors.lightGreen]
         ranks = []
         files = []
@@ -63,11 +85,11 @@ class Utils():
         for i in range(8):
             clr = clrs[i%2]
             img = font.render(ranks[i], True, clr)
-            self.screen.blit(img, (8, i*64+2*self.OFFSET))
+            self.screen.blit(img, (8, i*64+1.5*self.OFFSET))
         for i in range(8):
             clr = clrs[(i+7)%2]
             img = font.render(files[i], True, clr)
-            self.screen.blit(img, (i*64+2*self.OFFSET, 522.5+self.OFFSET))
+            self.screen.blit(img, (i*64+2*self.OFFSET, 512+self.OFFSET))
 
 
     def highlight(self, alpha, color, x, y):
@@ -99,19 +121,25 @@ class Utils():
         Kr, Kc = gs.getKingLocation(ally)
         self.highlight(150, (255, 0, 0), Kc, Kr)
 
-    def win(self, turn, check):
-        if check:
-            if turn == "w":
-                text = "Black Wins!"
+    def win(self, turn, check, time):
+        if time:
+            if turn == "b":
+                text = "Black Wins! by Time"
             else:
-                text = "White Wins!"
+                text = "White Wins! by Time"
+        
+        elif check:
+            if turn == "w":
+                text = "Black Wins! by CheckMate"
+            else:
+                text = "White Wins! by CheckMate"
         else:
             text = "StaleMate!"
 
-        textColor = (0 , 0, 0)
-        font = self.p.font.SysFont(None, 60)
+        textColor = (colors.black)
+        font = self.p.font.Font('./fonts/Poppins-Bold.ttf', 30)
         img = font.render(text, True, textColor)
-        self.screen.blit(img, (256 , 200))
+        self.screen.blit(img, (2*self.OFFSET, 200))
         self.p.display.update()
 
     def getTurnAlly(self, playerToMove):
