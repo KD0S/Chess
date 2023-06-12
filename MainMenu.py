@@ -1,6 +1,7 @@
 import pygame as p
 import ChessMain
-from utils import Button
+from utils import Button, drawText
+import colors
 
 p.init()
 screen = p.display.set_mode((700, 600))
@@ -8,15 +9,11 @@ p.display.set_caption('Chess')
 clock = p.time.Clock()
 screen.fill(p.Color("green"))
 running = True
-textColor = (238,238,210)
-bgColor = (118,150,86) 
+textColor = colors.lightGreen
+bgColor = colors.darkGreen
 screen.fill(bgColor)
-font = p.font.Font('./fonts/Poppins-Bold.ttf', 100)
-img = font.render("Chess", True, textColor)
-screen.blit(img, (180 , 100))
-font = p.font.Font('./fonts/Poppins-Bold.ttf', 40)
-img = font.render("Pick Your Side", True, textColor)
-screen.blit(img, (200 , 250))
+drawText(p, screen, 'Chess', textColor, 100, 180, 100)
+drawText(p, screen, 'Pick Your Side', textColor, 40, 200, 250)
 imageBK = p.image.load("./images/bK_logo.png").convert_alpha()
 imageBK = p.transform.scale(imageBK, (128, 128))
 imageWK = p.image.load("./images/wK_logo.png").convert_alpha()

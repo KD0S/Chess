@@ -206,3 +206,8 @@ class Utils():
                         piece = color+"p"
                         picking = False
         return piece
+
+def drawText(p, screen, text, color, size, x, y):
+    font = p.font.Font('./fonts/Poppins-Bold.ttf', size)
+    img = font.render(text, True, color)
+    screen.blit(img, (x , y))
