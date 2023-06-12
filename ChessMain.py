@@ -17,7 +17,7 @@ def loadImages():
               'bB', 'bR', 'bp',
               'wN', 'wQ', 'wK',
               'wB', 'wR', 'wp']
-    
+
     for piece in pieces:
         image = p.image.load("./images/"+piece+".png").convert_alpha()
         image = p.transform.scale(image, (SQ_SIZE, SQ_SIZE))
@@ -44,39 +44,46 @@ def main(player):
     clock.tick(MAX_FPS)
     utils.drawGameState(gs, currSq, validMoves, check)
     while running:
-        for e in p.event.get():      
-            
+        for e in p.event.get():
+
             if e.type == p.QUIT:
                 running = False
-                
+
             elif e.type == p.MOUSEBUTTONDOWN:
                 row, col = utils.GetMouseXY()
                 if row==-1 and col==-1:
                     continue
-                
+
                 if (row, col) == currSq:
                     currSq = ()
                     selectedCells = []
                 else:
                     currSq = (row, col)
                     selectedCells.append(currSq)
-                        
+
                 if len(selectedCells)==2:
                     move = Move(selectedCells[0], selectedCells[1], gs.board)
                     selectedCells = []
                     currSq = ()
                     if move in validMoves:
                         gs.makeMove(move)
-                        print(move.getChessNotation())  
+                        if move.pawnPromotion:
+                                if not gs.playerToMove:
+                                    color = gs.player
+                                else:
+                                    color = gs.enemy
+                                piece = utils.pawnPromotionMenu(move.endRow, move.endCol, color, IMAGES)
+                                gs.board[move.endRow][move.endCol] = piece
+                        print(move.getChessNotation())
                         moveMade = True
-                
+
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z:
                     gs.undoMove()
                     moveMade = True
                     selectedCells = []
                     currSq = ()
-            
+
             if moveMade:
                 validMoves = gs.getValidMoves(gs)
                 # is opponent in check?
@@ -89,7 +96,7 @@ def main(player):
                     time.sleep(3)
                     running = False
                     break
-                
+
                 # is player in check?
                 gs.playerToMove = not gs.playerToMove
                 turn, ally = utils.getTurnAlly(gs.playerToMove)
@@ -101,9 +108,7 @@ def main(player):
                     running = False
                     break
                 moveMade = False
-                
+
         utils.drawGameState(gs, currSq, validMoves, check)
 if __name__ == '__main__':
     main()
-  
-    

@@ -18,46 +18,45 @@ class GameState():
          self.board.reverse()
          for row in self.board:
              row.reverse()
-        self.playerToMove = True if player == "w" else False                                                                                                                                                                     
+        self.playerToMove = True if player == "w" else False
         self.moveLogs = []
         self.moveFunctions = {"p": MoveFunctions.getPawnMoves, "R": MoveFunctions.getRookMoves,
                               "N": MoveFunctions.getKnightMoves, "B": MoveFunctions.getBishopMoves,
                               "K": MoveFunctions.getKingMoves, "Q": MoveFunctions.getQueenMoves}
-        self.playerKingLocation = (7, 4) 
-        self.enemyKingLocation = (0, 4) 
+        self.playerKingLocation = (7, 4)
+        self.enemyKingLocation = (0, 4)
         self.playerKingMoved = 0
         self.enemyKingMoved = 0
         self.playerCastle = False
         self.enemyCastle = False
-        
+
     def makeMove(self, move : Move):
         if move.pieceMoved == '__':
             pass
         else:
-            
-            #en-passant 
+
+            #en-passant
             if move.pieceMoved == self.player+"p" and self.board[move.endRow][move.endCol] == "__" and (
                 move.endRow == move.startRow-1 and (move.endCol == move.startCol-1) or (move.endCol == move.startCol+1)
-            ):  
+            ):
                 self.board[move.endRow+1][move.endCol] = "__"
                 move.enPassant = True
-            
+
             elif move.pieceMoved == self.enemy+"p" and self.board[move.endRow][move.endCol] == "__" and (
                 move.endRow == move.startRow+1 and (move.endCol == move.startCol-1) or (move.endCol == move.startCol+1)
-            ):  
+            ):
                 self.board[move.endRow-1][move.endCol] = "__"
                 move.enPassant = True
-                
+
             self.moveLogs.append(move)
             self.board[move.startRow][move.startCol] = '__'
             self.board[move.endRow][move.endCol] = move.pieceMoved
-            
+
             #pawn-promotion
             if move.pieceMoved == self.player+"p" or move.pieceMoved == self.enemy+"p":
                 if move.endRow == 0 and self.playerToMove or move.endRow == 7 and not self.playerToMove:
-                    piece = input("Enter Piece for Promotion - Q: Queen, N: Knight, R: Rook, B: Bishop :")
-                    self.board[move.endRow][move.endCol] = self.player+piece if self.playerToMove else self.enemy+piece
-                    
+                  move.pawnPromotion = True
+
             # right-Castling
             if move.pieceMoved == self.player+"K" and move.endCol == move.startCol+2:
                 move1 = Move((7, 7), (7, move.endCol-1), self.board)
@@ -73,7 +72,7 @@ class GameState():
                 self.enemyCastle = True
                 move.ksCastling = True
                 self.moveLogs.append(move1)
-            
+
             # Left-Castling
             if move.pieceMoved == self.player+"K" and move.endCol == move.startCol-2:
                 move1 = Move((7, 0), (7, move.endCol+1), self.board)
@@ -90,30 +89,30 @@ class GameState():
                 move.qsCastling = True
                 self.moveLogs.append(move1)
 
-            self.playerToMove = not self.playerToMove  
+            self.playerToMove = not self.playerToMove
             if move.pieceMoved == self.player+"K":
                 self.playerKingLocation = (move.endRow, move.endCol)
                 self.playerKingMoved+=1
-                
+
             if move.pieceMoved == self.enemy+"K":
                 self.enemyKingLocation = (move.endRow, move.endCol)
                 self.enemyKingMoved+=1
-        
-                
-            
+
+
+
     def undoMove(self):
         if len(self.moveLogs) != 0:
             move = self.moveLogs.pop()
             self.board[move.startRow][move.startCol] = move.pieceMoved
             self.board[move.endRow][move.endCol] = move.pieceCaptured
             self.playerToMove = not self.playerToMove
-            
+
             if move.enPassant:
                 if self.playerToMove:
                     self.board[move.endRow+1][move.endCol] = self.enemy+"p"
                 else:
                     self.board[move.endRow-1][move.endCol] = self.player+"p"
-            
+
             #Left-Castling
             if move.pieceMoved == self.player+"R" and move.endCol == self.playerKingLocation[1]-1:
                 move1 = self.moveLogs[-1]
@@ -129,7 +128,7 @@ class GameState():
                     self.enemyCastle = False
                     self.board[move.startRow][move.startCol] = move.pieceMoved
                     self.board[move.endRow][move.endCol] = move.pieceCaptured
-            
+
             #Right-Castling
             if move.pieceMoved == self.player+"R" and move.endCol == self.playerKingLocation[1]+1:
                 move1 = self.moveLogs[-1]
@@ -145,15 +144,15 @@ class GameState():
                     self.enemyCastle = False
                     self.board[move.startRow][move.startCol] = move.pieceMoved
                     self.board[move.endRow][move.endCol] = move.pieceCaptured
-                    
+
             if move.pieceMoved == self.player+"K":
                 self.playerKingLocation = (move.startRow, move.startCol)
                 self.playerKingMoved-=1
-                
+
             if move.pieceMoved == self.enemy+"K":
                 self.enemyKingLocation = (move.startRow, move.startCol)
                 self.enemyKingMoved-=1
-    
+
     def getValidMoves(self, gs):
         moves = self.getAllPossibleMoves(gs)
         if gs.playerToMove:
@@ -173,7 +172,7 @@ class GameState():
             for move in toBeRemoved:
                 moves.remove(move)
         return moves
-    
+
     def getAllPossibleMoves(self, gs):
         moves = []
         for r in range(len(self.board)):
@@ -183,7 +182,7 @@ class GameState():
                     piece = self.board[r][c][1]
                     self.moveFunctions[piece](gs, r, c, moves, self.player)
         return moves
-                        
+
     def displayPossibleMoves(self, r, c, moves):
         cells_to_be_highlighted = []
         for move in moves:
@@ -196,9 +195,5 @@ class GameState():
             (Kr, Kc) = self.playerKingLocation
         else:
             (Kr, Kc) = self.enemyKingLocation
-        
-        return (Kr, Kc)   
-            
-            
-        
-                
+
+        return (Kr, Kc)
