@@ -18,12 +18,13 @@ class Move():
         self.pieceMoved = board[self.startRow][self.startCol]
         self.pieceCaptured = board[self.endRow][self.endCol]
         self.moveId = self.startRow*1000 + self.startCol*100 + self.endRow*10 + self.endCol
+        self.Position = board
 
     def __eq__(self, other):
         if isinstance(other, Move):
             return self.moveId == other.moveId
         return False
-
+            
     def getChessNotation(self):
         if self.enPassant:
             return self.colsToFiles[self.startCol]+'X'+self.getRankFile(self.endRow, self.endCol)

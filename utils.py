@@ -27,9 +27,10 @@ class Clock():
         self.s.fill(colors.darkGreen)
         self.screen.blit(self.s, (self.x*self.SQ_SIZE+self.OFFSET+20, self.y*self.SQ_SIZE+self.OFFSET))
         font = self.p.font.Font('./fonts/Poppins-Bold.ttf', 22)
-        text = time.strftime("%M:%S", time.gmtime(text))
-        img = font.render(text, True, colors.lightGreen)
-        self.screen.blit(img, (self.x*self.SQ_SIZE+self.OFFSET+20, self.y*self.SQ_SIZE+self.OFFSET))
+        if text:
+            text = time.strftime("%M:%S", time.gmtime(text))
+            img = font.render(text, True, colors.lightGreen)
+            self.screen.blit(img, (self.x*self.SQ_SIZE+self.OFFSET+20, self.y*self.SQ_SIZE+self.OFFSET))
         self.update()
         
     def update(self):
@@ -121,18 +122,23 @@ class Utils():
         Kr, Kc = gs.getKingLocation(ally)
         self.highlight(150, (255, 0, 0), Kc, Kr)
 
-    def win(self, turn, check, time):
-        if time:
+    def endScreen(self, turn, condition):
+        if condition == 'time':
             if turn == "b":
                 text = "Black Wins! by Time"
             else:
                 text = "White Wins! by Time"
-        
-        elif check:
+        elif condition == 'check':
             if turn == "w":
                 text = "Black Wins! by CheckMate"
             else:
                 text = "White Wins! by CheckMate"
+        
+        elif condition == 'material':
+                text = "Draw! Insufficient Material"
+        
+        elif condition == 'repetition':
+                text = "Draw! 3-Fold Repitition Rule"    
         else:
             text = "StaleMate!"
 
@@ -141,6 +147,8 @@ class Utils():
         img = font.render(text, True, textColor)
         self.screen.blit(img, (2*self.OFFSET, 200))
         self.p.display.update()
+        time.sleep(3)
+        return False
 
     def getTurnAlly(self, playerToMove):
         if playerToMove:

@@ -25,7 +25,7 @@ def loadImages():
         IMAGES[piece] = image
 
 
-def main(player):
+def main(player, timed):
     p.init()
     screen = p.display.set_mode((700, 600))
     p.display.set_caption('Chess')
@@ -36,7 +36,7 @@ def main(player):
     p.display.set_icon(IMAGES['wN'])
     utils.display_rankFile(player)
     running = True
-    validMoves = gs.getValidMoves(gs)
+    validMoves = gs.getValidMoves()
     moveMade = False
     check = False
     selectedCells = []
@@ -44,34 +44,35 @@ def main(player):
     utils.drawGameState(gs, currSq, validMoves, check)
     player2Clock =  Clock(p, screen, 8.3, 0)
     player1Clock =  Clock(p, screen, 8.3, 7.5)
-    player1Time = 300
-    player2Time = 300
+    if timed:
+        player1Time = 300
+        player2Time = 300
+    else:
+        player1Time = None
+        player2Time = None   
     player1Clock.draw(player1Time)
     player2Clock.draw(player2Time)
-    clock = p.time.Clock()
-    startTime = time.time()
+    if time:
+        clock = p.time.Clock()
+        startTime = time.time()
     while running:
-        clock.tick(10)
-        if gs.playerToMove:
+        clock.tick(30)
+        if gs.playerToMove and timed:
             player1Time -= time.time() - startTime
             if player1Time <= 0:
-                utils.win(gs.enemy, False, True)
-                running = False
-                time.sleep(3)
+                running = utils.endScreen(gs.enemy, 'time')
                 break
             player1Clock.draw(player1Time)
             
-        else:
+        elif not gs.playerToMove and timed:
             player2Time -= time.time() - startTime
             if player2Time <= 0:
-                utils.win(gs.player, False, True)
-                running = False
-                time.sleep(3)
+                running = utils.endScreen(gs.player, 'time')
                 break
             player2Clock.draw(player2Time)
             
-        
-        startTime = time.time()
+        if timed:
+            startTime = time.time()
         
         for e in p.event.get():
 
@@ -91,20 +92,21 @@ def main(player):
                     selectedCells.append(currSq)
 
                 if len(selectedCells)==2:
-                    move = Move(selectedCells[0], selectedCells[1], gs.board)
+                    currMove = Move(selectedCells[0], selectedCells[1], gs.board)
                     selectedCells = []
                     currSq = ()
-                    if move in validMoves:
-                        gs.makeMove(move)
-                        if move.pawnPromotion:
-                                if not gs.playerToMove:
-                                    color = gs.player
-                                else:
-                                    color = gs.enemy
-                                piece = utils.pawnPromotionMenu(move.endRow, move.endCol, color, IMAGES)
-                                gs.board[move.endRow][move.endCol] = piece
-                        print(move.getChessNotation())
-                        moveMade = True
+                    for move in validMoves:
+                        if move == currMove:
+                            gs.makeMove(move)
+                            if move.pawnPromotion:
+                                    if not gs.playerToMove:
+                                        color = gs.player
+                                    else:
+                                        color = gs.enemy
+                                    piece = utils.pawnPromotionMenu(move.endRow, move.endCol, color, IMAGES)
+                                    gs.board[move.endRow][move.endCol] = piece
+                            print(move.getChessNotation())
+                            moveMade = True
 
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z:
@@ -114,27 +116,37 @@ def main(player):
                     currSq = ()
 
             if moveMade:
-                validMoves = gs.getValidMoves(gs)
+                
+                validMoves = gs.getValidMoves()
+                       
+                if len(validMoves)==0:
+                    if gs.inSuffiecientMaterial:
+                        running = utils.endScreen('w', 'material')
+                        break
+                    elif gs.threeFoldRepition:
+                        running = utils.endScreen('w', 'repetition')
+                        break
+                    else:
+                        running = utils.endScreen('w', 'stalemate')
+                        break
+                        
+                
                 # is opponent in check?
                 gs.playerToMove = not gs.playerToMove
                 turn, ally = utils.getTurnAlly(gs.playerToMove)
                 (Kr, Kc) = gs.getKingLocation(ally)
-                check = isCheck(gs, ally, player, Kr, Kc)
+                check = isCheck(gs.board, ally, player, Kr, Kc)
                 if check:
-                    utils.win(turn, check, False)
-                    time.sleep(3)
-                    running = False
+                    running = utils.endScreen(turn, 'check')
                     break
 
                 # is player in check?
                 gs.playerToMove = not gs.playerToMove
                 turn, ally = utils.getTurnAlly(gs.playerToMove)
                 (Kr, Kc) = gs.getKingLocation(ally)
-                check = isCheck(gs, ally, player, Kr, Kc)
+                check = isCheck(gs.board, ally, player, Kr, Kc)
                 if len(validMoves) == 0:
-                    utils.win(turn, check, False)
-                    time.sleep(3)
-                    running = False
+                    running = utils.endScreen(turn, 'check')
                     break
                 moveMade = False
 

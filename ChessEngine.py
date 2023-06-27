@@ -1,6 +1,8 @@
-import MoveFunctions
 from checks import isCheck
 from Move import Move
+from MoveFunctions import (getBishopMoves, getKingMoves, getKnightMoves, 
+                            getPawnMoves, getQueenMoves, getRookMoves)
+from FEN import FEN
 
 class GameState():
     def __init__(self, player):
@@ -20,42 +22,56 @@ class GameState():
              row.reverse()
         self.playerToMove = True if player == "w" else False
         self.moveLogs = []
-        self.moveFunctions = {"p": MoveFunctions.getPawnMoves, "R": MoveFunctions.getRookMoves,
-                              "N": MoveFunctions.getKnightMoves, "B": MoveFunctions.getBishopMoves,
-                              "K": MoveFunctions.getKingMoves, "Q": MoveFunctions.getQueenMoves}
+        self.moveFunctions = {"R": getRookMoves, "N": getKnightMoves, 
+                              "p": getPawnMoves, "K": getKingMoves,
+                              "B": getBishopMoves, "Q": getQueenMoves}
         self.playerKingLocation = (7, 4)
         self.enemyKingLocation = (0, 4)
         self.playerKingMoved = 0
         self.enemyKingMoved = 0
         self.playerCastle = False
         self.enemyCastle = False
-
-    def makeMove(self, move : Move):
+        self.boardPieces = {'wK': 1, 'wQ': 1, 'wN': 2, 'wB': 2, 'wR': 2, 'wp': 8,
+                            'bK': 1, 'bQ': 1, 'bN': 2, 'bB': 2, 'bR': 2, 'bp': 8}
+        self.pieces = ["K", "Q", "R", "B", "N", "p"]
+        self.inSuffiecientMaterial = False
+        self.insuffientMaterialCombinations = [
+            # K v K 
+            {'wK': 1, 'wQ': 0, 'wN': 0, 'wB': 0, 'wR': 0, 'wp': 0,
+            'bK': 1, 'bQ': 0, 'bN': 0, 'bB': 0, 'bR': 0, 'bp': 0}, 
+            
+            # N+K v K
+            {'wK': 1, 'wQ': 0, 'wN': 1, 'wB': 0, 'wR': 0, 'wp': 0,
+            'bK': 1, 'bQ': 0, 'bN': 0, 'bB': 0, 'bR': 0, 'bp': 0},
+            
+            {'wK': 1, 'wQ': 0, 'wN': 0, 'wB': 0, 'wR': 0, 'wp': 0,
+            'bK': 1, 'bQ': 0, 'bN': 1, 'bB': 0, 'bR': 0, 'bp': 0},
+            
+            # B+K v K
+            {'wK': 1, 'wQ': 0, 'wN': 0, 'wB': 1, 'wR': 0, 'wp': 0,
+            'bK': 1, 'bQ': 0, 'bN': 0, 'bB': 0, 'bR': 0, 'bp': 0},
+            
+            {'wK': 1, 'wQ': 0, 'wN': 0, 'wB': 0, 'wR': 0, 'wp': 0,
+            'bK': 1, 'bQ': 0, 'bN': 0, 'bB': 1, 'bR': 0, 'bp': 0}]
+        self.stateLogs = []
+        self.FEN = FEN()
+        self.threeFoldRepition = False
+        
+    def makeMove(self, move):
         if move.pieceMoved == '__':
             pass
         else:
-
             #en-passant
-            if move.pieceMoved == self.player+"p" and self.board[move.endRow][move.endCol] == "__" and (
-                move.endRow == move.startRow-1 and (move.endCol == move.startCol-1) or (move.endCol == move.startCol+1)
-            ):
+            if move.pieceMoved == self.player+"p" and move.enPassant:
                 self.board[move.endRow+1][move.endCol] = "__"
-                move.enPassant = True
 
-            elif move.pieceMoved == self.enemy+"p" and self.board[move.endRow][move.endCol] == "__" and (
-                move.endRow == move.startRow+1 and (move.endCol == move.startCol-1) or (move.endCol == move.startCol+1)
-            ):
+            elif move.pieceMoved == self.enemy+"p" and move.enPassant:
                 self.board[move.endRow-1][move.endCol] = "__"
-                move.enPassant = True
 
             self.moveLogs.append(move)
+            
             self.board[move.startRow][move.startCol] = '__'
             self.board[move.endRow][move.endCol] = move.pieceMoved
-
-            #pawn-promotion
-            if move.pieceMoved == self.player+"p" or move.pieceMoved == self.enemy+"p":
-                if move.endRow == 0 and self.playerToMove or move.endRow == 7 and not self.playerToMove:
-                  move.pawnPromotion = True
 
             # right-Castling
             if move.pieceMoved == self.player+"K" and move.endCol == move.startCol+2:
@@ -81,6 +97,7 @@ class GameState():
                 self.playerCastle = True
                 move.qsCastling = True
                 self.moveLogs.append(move1)
+                
             elif move.pieceMoved == self.enemy+"K" and move.endCol == move.startCol-2:
                 move1 = Move((0, 0), (0, move.endCol+1), self.board)
                 self.board[0][7] = '__'
@@ -88,8 +105,27 @@ class GameState():
                 self.enemyCastle = True
                 move.qsCastling = True
                 self.moveLogs.append(move1)
-
+            
+            if move.pieceCaptured != "__":
+                self.boardPieces[move.pieceCaptured]-=1
+            
             self.playerToMove = not self.playerToMove
+            
+            # Check for 3-Fold Repitition
+            boardNotation = self.FEN.positionTOFEN(self.board)
+            
+            currState = {'playerCastle': self.playerCastle,
+                         'enemyCastle': self.enemyCastle, #'moves': len(moves), 
+                         'playerToMove': self.playerToMove}
+
+            positionState = {boardNotation : currState}
+            
+            if positionState in self.stateLogs:
+                if self.stateLogs.count(positionState) == 2:
+                    self.threeFoldRepition = True
+        
+            self.stateLogs.append(positionState)
+            
             if move.pieceMoved == self.player+"K":
                 self.playerKingLocation = (move.endRow, move.endCol)
                 self.playerKingMoved+=1
@@ -97,8 +133,6 @@ class GameState():
             if move.pieceMoved == self.enemy+"K":
                 self.enemyKingLocation = (move.endRow, move.endCol)
                 self.enemyKingMoved+=1
-
-
 
     def undoMove(self):
         if len(self.moveLogs) != 0:
@@ -144,7 +178,12 @@ class GameState():
                     self.enemyCastle = False
                     self.board[move.startRow][move.startCol] = move.pieceMoved
                     self.board[move.endRow][move.endCol] = move.pieceCaptured
+            
+            self.stateLogs.pop()
 
+            if move.pieceCaptured != "__":
+                self.boardPieces[move.pieceCaptured]+=1
+            
             if move.pieceMoved == self.player+"K":
                 self.playerKingLocation = (move.startRow, move.startCol)
                 self.playerKingMoved-=1
@@ -152,35 +191,46 @@ class GameState():
             if move.pieceMoved == self.enemy+"K":
                 self.enemyKingLocation = (move.startRow, move.startCol)
                 self.enemyKingMoved-=1
-
-    def getValidMoves(self, gs):
-        moves = self.getAllPossibleMoves(gs)
-        if gs.playerToMove:
+    
+    def getValidMoves(self):
+        moves = self.getAllPossibleMoves()
+        
+        if self.boardPieces in self.insuffientMaterialCombinations:
+            self.inSuffiecientMaterial = True
+            return []
+        
+        if self.threeFoldRepition:
+            return []
+        
+        if self.playerToMove:
             ally = self.player
             (Kr, Kc) = self.playerKingLocation
         else:
             ally = self.enemy
             (Kr, Kc) = self.enemyKingLocation
-        if  isCheck(gs, ally, self.player, Kr, Kc):
+            
+        if  isCheck(self.board, ally, self.player, Kr, Kc):
             toBeRemoved = []
             for move in moves:
                 self.makeMove(move)
                 (Kr, Kc) = self.getKingLocation(ally)
-                if isCheck(gs, ally, self.player, Kr, Kc):
+                if isCheck(self.board, ally, self.player, Kr, Kc):
                     toBeRemoved.append(move)
                 self.undoMove()
             for move in toBeRemoved:
                 moves.remove(move)
+        
         return moves
 
-    def getAllPossibleMoves(self, gs):
+    def getAllPossibleMoves(self):
         moves = []
         for r in range(len(self.board)):
             for c in range(len(self.board[r])):
                 turn = self.board[r][c][0]
-                if gs.playerToMove and self.player == turn or not gs.playerToMove and self.enemy == turn:
+                if (self.playerToMove and self.player == turn 
+                    or not self.playerToMove and self.enemy == turn):
                     piece = self.board[r][c][1]
-                    self.moveFunctions[piece](gs, r, c, moves, self.player)
+                    self.moveFunctions[piece](self, r, c, moves)
         return moves
 
     def displayPossibleMoves(self, r, c, moves):
@@ -197,3 +247,4 @@ class GameState():
             (Kr, Kc) = self.enemyKingLocation
 
         return (Kr, Kc)
+    
