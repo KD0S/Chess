@@ -1,8 +1,7 @@
 import pygame as p
-import local2player
-import playerCPU
-from utils import Button, drawText
+import local2player, playerCPU
 import colors
+from utils import Button, drawText
 
 p.init()
 screen = p.display.set_mode((700, 600))
@@ -15,9 +14,9 @@ bgColor = colors.darkGreen
 screen.fill(bgColor)
 drawText(p, screen, 'Chess', textColor, 100, 180, 100)
 drawText(p, screen, 'Pick Your Side', textColor, 40, 200, 250)
-imageBK = p.image.load("./images/bK_logo.png").convert_alpha()
+imageBK = p.image.load("./Assets/images/bK_logo.png").convert_alpha()
 imageBK = p.transform.scale(imageBK, (128, 128))
-imageWK = p.image.load("./images/wK_logo.png").convert_alpha()
+imageWK = p.image.load("./Assets/images/wK_logo.png").convert_alpha()
 imageWK = p.transform.scale(imageWK, (128, 128))
 bKbutton = Button(200, 350, imageBK, "K")
 wKbutton = Button(350, 350, imageWK, "K")
@@ -51,9 +50,9 @@ while picking:
 screen.fill(bgColor)
 drawText(p, screen, 'Chess', textColor, 100, 180, 100)
 drawText(p, screen, 'Pick Your Opponent', textColor, 40, 150, 250)
-pvp = p.image.load("./images/pvp.png").convert_alpha()
+pvp = p.image.load("./Assets/images/pvp.png").convert_alpha()
 pvp = p.transform.scale(pvp, (128, 128))
-pve = p.image.load("./images/pve.png").convert_alpha()
+pve = p.image.load("./Assets/images/pve.png").convert_alpha()
 pve = p.transform.scale(pve, (128, 128))
 pveButton = Button(200, 350, pve, "K")
 pvpButton = Button(350, 350, pvp, "K")
@@ -85,9 +84,9 @@ if timer:
     screen.fill(bgColor)
     drawText(p, screen, 'Chess', textColor, 100, 180, 100)
     drawText(p, screen, 'Choose Mode', textColor, 40, 200, 250)
-    timer = p.image.load("./images/timer.png").convert_alpha()
+    timer = p.image.load("./Assets/images/timer.png").convert_alpha()
     timer = p.transform.scale(timer, (128, 128))
-    infinity = p.image.load("./images/infinity.png").convert_alpha()
+    infinity = p.image.load("./Assets/images/infinity.png").convert_alpha()
     infinity = p.transform.scale(infinity, (128, 128))
     timerButton = Button(200, 350, timer, "K")
     infinityButton = Button(350, 350, infinity, "K")

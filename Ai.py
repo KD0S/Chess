@@ -11,7 +11,7 @@ class Ai():
         
         self.weights = [self.KWt, self.QWt, self.RWt, self.BWt, self.NWt, self.pWt]
         self.mobilityWt = 2
-    
+  
     def ComplexEvalCPU(self, gs):     
         materialScore = 0
         mobilityScore = 0

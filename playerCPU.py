@@ -18,7 +18,7 @@ def loadImages():
               'wB', 'wR', 'wp']
 
     for piece in pieces:
-        image = p.image.load("./images/"+piece+".png").convert_alpha()
+        image = p.image.load("./Assets/images/"+piece+".png").convert_alpha()
         image = p.transform.scale(image, (SQ_SIZE, SQ_SIZE))
         IMAGES[piece] = image
 

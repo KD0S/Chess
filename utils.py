@@ -26,7 +26,7 @@ class Clock():
     def draw(self, text):
         self.s.fill(colors.darkGreen)
         self.screen.blit(self.s, (self.x*self.SQ_SIZE+self.OFFSET+20, self.y*self.SQ_SIZE+self.OFFSET))
-        font = self.p.font.Font('./fonts/Poppins-Bold.ttf', 22)
+        font = self.p.font.Font('./Assets/fonts/Poppins-Bold.ttf', 22)
         if text:
             text = time.strftime("%M:%S", time.gmtime(text))
             img = font.render(text, True, colors.lightGreen)
@@ -73,7 +73,7 @@ class Utils():
         self.p.display.update()
 
     def display_rankFile(self, player):
-        font = self.p.font.Font('./fonts/Poppins-Bold.ttf', 20)
+        font = self.p.font.Font('./Assets/fonts/Poppins-Bold.ttf', 20)
         clrs = [colors.darkGreen, colors.lightGreen]
         ranks = []
         files = []
@@ -143,7 +143,7 @@ class Utils():
             text = "StaleMate!"
 
         textColor = (colors.black)
-        font = self.p.font.Font('./fonts/Poppins-Bold.ttf', 30)
+        font = self.p.font.Font('./Assets/fonts/Poppins-Bold.ttf', 30)
         img = font.render(text, True, textColor)
         self.screen.blit(img, (2*self.OFFSET, 200))
         self.p.display.update()
@@ -216,6 +216,6 @@ class Utils():
         return piece
 
 def drawText(p, screen, text, color, size, x, y):
-    font = p.font.Font('./fonts/Poppins-Bold.ttf', size)
+    font = p.font.Font('./Assets/fonts/Poppins-Bold.ttf', size)
     img = font.render(text, True, color)
     screen.blit(img, (x , y))

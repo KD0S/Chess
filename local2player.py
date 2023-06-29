@@ -20,7 +20,7 @@ def loadImages():
               'wB', 'wR', 'wp']
 
     for piece in pieces:
-        image = p.image.load("./images/"+piece+".png").convert_alpha()
+        image = p.image.load("./Assets/images/"+piece+".png").convert_alpha()       
         image = p.transform.scale(image, (SQ_SIZE, SQ_SIZE))
         IMAGES[piece] = image
 
@@ -151,5 +151,10 @@ def main(player, timed):
                 moveMade = False
 
         utils.drawGameState(gs, currSq, validMoves, check)
+
 if __name__ == '__main__':
     main()
+
+
+
+
