@@ -1,7 +1,7 @@
 import pygame as p
-import local2player, playerCPU
-import colors
-from utils import Button, drawText
+from Modules import local2player, playerCPU
+from Modules import colors
+from Modules.utils import Button, drawText
 
 p.init()
 screen = p.display.set_mode((700, 600))

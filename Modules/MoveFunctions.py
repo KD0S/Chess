@@ -1,5 +1,5 @@
-from Move import Move
-from checks import isCheck
+from Modules.Move import Move
+from Modules.checks import isCheck
 
 def getPawnMoves(gs, row, col, moves):
         if gs.playerToMove:

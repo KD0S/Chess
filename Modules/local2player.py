@@ -1,9 +1,8 @@
 import pygame as p
-import ChessEngine
-from Move import Move
-from utils import Utils
-from utils import Clock
-from checks import isCheck
+from Modules import ChessEngine
+from Modules.Move import Move
+from Modules.utils import Utils, Clock
+from Modules.checks import isCheck
 import time
 
 WIDTH = HEIGHT = 512

@@ -1,9 +1,9 @@
 import pygame as p
-import ChessEngine
-from Move import Move
-from utils import Utils, Clock
-from checks import isCheck
-from Ai import Ai
+from Modules import ChessEngine
+from Modules.Move import Move
+from Modules.utils import Utils, Clock
+from Modules.checks import isCheck
+from Modules.Ai import Ai
 
 WIDTH = HEIGHT = 512
 DIMENSION = 8

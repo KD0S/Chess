@@ -1,8 +1,8 @@
-from checks import isCheck
-from Move import Move
-from MoveFunctions import (getBishopMoves, getKingMoves, getKnightMoves, 
+from Modules.checks import isCheck
+from Modules.Move import Move
+from Modules.MoveFunctions import (getBishopMoves, getKingMoves, getKnightMoves, 
                             getPawnMoves, getQueenMoves, getRookMoves)
-from FEN import FEN
+from Modules.FEN import FEN
 
 class GameState():
     def __init__(self, player):

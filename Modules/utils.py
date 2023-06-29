@@ -1,5 +1,5 @@
-from Move import Move
-import colors
+from Modules.Move import Move
+from Modules import colors
 import time
 
 class Button():
