@@ -5,7 +5,6 @@ from utils import Utils, Clock
 from checks import isCheck
 from Ai import Ai
 
-
 WIDTH = HEIGHT = 512
 DIMENSION = 8
 SQ_SIZE = HEIGHT // DIMENSION
@@ -29,7 +28,7 @@ def main(player):
     p.init()
     screen = p.display.set_mode((700, 600))
     p.display.set_caption('Chess')
-    screen.fill(p.Color("black"))
+    screen.fill((18, 18, 18))
     
     gs = ChessEngine.GameState(player)
     loadImages()

@@ -29,7 +29,7 @@ def main(player, timed):
     p.init()
     screen = p.display.set_mode((700, 600))
     p.display.set_caption('Chess')
-    screen.fill(p.Color("black"))
+    screen.fill((18, 18, 18))
     gs = ChessEngine.GameState(player)
     loadImages()
     utils = Utils(p, DIMENSION, SQ_SIZE, IMAGES, player, screen)
