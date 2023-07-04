@@ -204,21 +204,18 @@ class GameState():
         
         if self.playerToMove:
             ally = self.player
-            (Kr, Kc) = self.playerKingLocation
         else:
             ally = self.enemy
-            (Kr, Kc) = self.enemyKingLocation
             
-        if  isCheck(self.board, ally, self.player, Kr, Kc):
-            toBeRemoved = []
-            for move in moves:
-                self.makeMove(move)
-                (Kr, Kc) = self.getKingLocation(ally)
-                if isCheck(self.board, ally, self.player, Kr, Kc):
-                    toBeRemoved.append(move)
-                self.undoMove()
-            for move in toBeRemoved:
-                moves.remove(move)
+        toBeRemoved = []
+        for move in moves:
+            self.makeMove(move)
+            (Kr, Kc) = self.getKingLocation(ally)
+            if isCheck(self.board, ally, self.player, Kr, Kc):
+                toBeRemoved.append(move)
+            self.undoMove()
+        for move in toBeRemoved:
+            moves.remove(move)
         
         return moves
 

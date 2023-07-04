@@ -34,13 +34,6 @@ def main(player):
     loadImages()
     utils = Utils(p, DIMENSION, SQ_SIZE, IMAGES, player, screen)
     p.display.set_icon(IMAGES['wN'])
-    utils.display_rankFile(player)    
-    # player2Clock =  Clock(p, screen, 8.3, 0)
-    # player1Clock =  Clock(p, screen, 8.3, 7.5)
-    # # player1Time = gs.player
-    # # player2Time = gs.enemy
-    # # player1Clock.draw(player1Time)
-    # # player2Clock.draw(player2Time)
     
     running = True
     validMoves = gs.getValidMoves()
@@ -103,8 +96,6 @@ def main(player):
                 move = bots.greedyBot(gs)
                 gs.makeMove(move)
                 if move.pawnPromotion:
-                        # # random bot
-                        # piece = Ai.randomBot([gs.enemy+'R', gs.enemy+'N', gs.enemy+'B', gs.enemy+'Q'], gs)
                         piece = gs.enemy+'Q'
                         gs.board[move.endRow][move.endCol] = piece
                 print(move.getChessNotation())

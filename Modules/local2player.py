@@ -115,10 +115,14 @@ def main(player, timed):
                     currSq = ()
 
             if moveMade:
-                
                 validMoves = gs.getValidMoves()
-                       
                 if len(validMoves)==0:
+                    turn, ally = utils.getTurnAlly(gs.playerToMove)
+                    (Kr, Kc) = gs.getKingLocation(ally)
+                    check = isCheck(gs.board, ally, player, Kr, Kc)
+                    if check:
+                        running = utils.endScreen(turn, 'check')
+                        break
                     if gs.inSuffiecientMaterial:
                         running = utils.endScreen('w', 'material')
                         break
@@ -127,26 +131,6 @@ def main(player, timed):
                         break
                     else:
                         running = utils.endScreen('w', 'stalemate')
-                        break
-                        
-                
-                # is opponent in check?
-                gs.playerToMove = not gs.playerToMove
-                turn, ally = utils.getTurnAlly(gs.playerToMove)
-                (Kr, Kc) = gs.getKingLocation(ally)
-                check = isCheck(gs.board, ally, player, Kr, Kc)
-                if check:
-                    running = utils.endScreen(turn, 'check')
-                    break
-
-                # is player in check?
-                gs.playerToMove = not gs.playerToMove
-                turn, ally = utils.getTurnAlly(gs.playerToMove)
-                (Kr, Kc) = gs.getKingLocation(ally)
-                check = isCheck(gs.board, ally, player, Kr, Kc)
-                if len(validMoves) == 0:
-                    running = utils.endScreen(turn, 'check')
-                    break
                 moveMade = False
 
         utils.drawGameState(gs, currSq, validMoves, check)

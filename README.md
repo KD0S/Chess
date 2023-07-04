@@ -15,5 +15,8 @@ for selected piece.
 
 Engines also allow special moves like **Castling**, **En Passant** and **Promotion**.
 
-<img src="./Assets/images/castling.gif" width=250 height=200/>
-<img src="./Assets/images/enpassant.gif" width=250 height=200/><img src="./Assets/images/promotion.gif" width=250 height=200/>
+<p>
+    <img src="./Assets/images/castling.gif" width=250 height=200/>
+    <img src="./Assets/images/enpassant.gif" width=250 height=200/>
+    <img src="./Assets/images/promotion.gif" width=250 height=200/>
+</p>

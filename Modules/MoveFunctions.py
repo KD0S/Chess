@@ -225,33 +225,19 @@ def getKingMoves(gs, row, col, moves):
         rows = [0, 0, 1, -1, 1, 1, -1, -1]
         cols = [1, -1, 0, 0, 1, -1, 1, -1]
         
-        kingMoves = []
-        
         for i, j in zip(rows, cols):
             if row+i >= 0 and row+i <= 7 and col+j <= 7 and col+j >= 0:
                 if gs.board[row+i][col+j] == "__":
-                    kingMoves.append(Move((row,col), (row+i, col+j), gs.board))
+                    moves.append(Move((row,col), (row+i, col+j), gs.board))
                 elif (gs.board[row+i][col+j][0] != gs.player and gs.playerToMove 
                     or gs.board[row+i][col+j][0] == gs.player and not gs.playerToMove):
-                    kingMoves.append(Move((row,col), (row+i, col+j), gs.board))
+                    moves.append(Move((row,col), (row+i, col+j), gs.board))
                     
         if gs.playerToMove:
             ally = gs.player
         else: 
             ally = "w" if gs.player == "b" else "b"
             
-        toBeRemoved = []
-        for move in kingMoves:
-            gs.makeMove(move)
-            (Kr, Kc) = gs.getKingLocation(ally)
-            if isCheck(gs.board, ally, gs.player, Kr, Kc):
-                toBeRemoved.append(move)
-            gs.undoMove()
-        for move in toBeRemoved:
-            kingMoves.remove(move)            
-        for move in kingMoves:
-            moves.append(move)
-
         # Left-Castling
         if col+1 <= 7 and col+2 <= 7 and gs.board[row][col+1] == gs.board[row][col+2] == "__":
             if gs.playerToMove and not gs.playerCastle:
@@ -266,7 +252,6 @@ def getKingMoves(gs, row, col, moves):
                         if KSRook:
                             checkLeftCastleMoves(gs, ally, gs.player, row, col, moves)
 
-            
             elif not gs.playerToMove and not gs.enemyCastle:
                 if not isCheck(gs.board, gs.enemy, gs.player, row, col):
                     if gs.enemyKingMoved==0:
@@ -314,5 +299,5 @@ def checkRightCastleMoves(gs, ally, player, row, col, moves):
         if not isCheck(gs.board, ally, player, row, col-1):
             if not isCheck(gs.board, ally, player, row, col-2):
                 move = Move((row, col), (row, col-2), gs.board)
-                move.qsCastlings = True
+                move.qsCastling = True
                 moves.append(move) 
