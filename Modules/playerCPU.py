@@ -81,47 +81,43 @@ def main(player):
                                 if move.pawnPromotion:
                                     piece = utils.pawnPromotionMenu(move.endRow, move.endCol, gs.player, IMAGES)
                                     gs.board[move.endRow][move.endCol] = piece
+                                    gs.boardPieces[gs.player+'p']-=1
+                                    gs.boardPieces[piece]+=1
                                 print(move.getChessNotation())
                                 moveMade = True
             
             else:
-                if len(validMoves) == 0:
-                    if gs.inSuffiecientMaterial:
-                        running = utils.endScreen(gs.enemy, 'material')
-                        break
-                    check = isCheck(gs.board, gs.enemy, player, 
-                                    gs.enemyKingLocation[0], gs.enemyKingLocation[1])
-                    running = utils.endScreen(gs.enemy, 'check')
-                    break
                 move = bots.greedyBot(gs)
-                gs.makeMove(move)
-                if move.pawnPromotion:
-                        piece = gs.enemy+'Q'
-                        gs.board[move.endRow][move.endCol] = piece
-                print(move.getChessNotation())
+                if move !=  None:
+                    gs.makeMove(move)
+                    if move.pawnPromotion:
+                            piece = gs.enemy+'Q'
+                            gs.board[move.endRow][move.endCol] = piece
+                            gs.boardPieces[gs.enemy+'p']-=1
+                            gs.boardPieces[gs.enemy+'Q']+=1
+                    print(move.getChessNotation())
                 moveMade = True
 
             if moveMade:
                 validMoves = gs.getValidMoves()
-                
-                # is opponent in check?
-                gs.playerToMove = not gs.playerToMove
                 turn, ally = utils.getTurnAlly(gs.playerToMove)
                 (Kr, Kc) = gs.getKingLocation(ally)
                 check = isCheck(gs.board, ally, player, Kr, Kc)
-                if check:
-                    running = utils.endScreen(turn, 'check')
-                    break
 
-                # is player in check?
-                gs.playerToMove = not gs.playerToMove
-                turn, ally = utils.getTurnAlly(gs.playerToMove)
-                (Kr, Kc) = gs.getKingLocation(ally)
-                check = isCheck(gs.board, ally, player, Kr, Kc)
-                if len(validMoves) == 0:
-                    running = utils.endScreen(turn, 'check')
-                    break
-                
+                if len(validMoves)==0:
+                    boardNotation = gs.FEN.positionTOFEN(gs.board)
+                    print(boardNotation)
+                    if check:
+                        running = utils.endScreen(turn, 'check')
+                        break
+                    if gs.inSuffiecientMaterial:
+                        running = utils.endScreen('w', 'material')
+                        break
+                    elif gs.threeFoldRepition:
+                        running = utils.endScreen('w', 'repetition')
+                        break
+                    else:
+                        running = utils.endScreen('w', 'stalemate')
                 moveMade = False
 
         utils.drawGameState(gs, currSq, validMoves, check)

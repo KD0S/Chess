@@ -1,7 +1,7 @@
 import pygame as p
 from Modules import ChessEngine
 from Modules.Move import Move
-from Modules.utils import Utils, Clock
+from Modules.utils import Utils, Clock, Resign, Button
 from Modules.checks import isCheck
 import time
 
@@ -41,19 +41,20 @@ def main(player, timed):
     selectedCells = []
     currSq = ()
     utils.drawGameState(gs, currSq, validMoves, check)
-    player2Clock =  Clock(p, screen, 8.3, 0)
-    player1Clock =  Clock(p, screen, 8.3, 7.5)
+    clock = p.time.Clock()
+    resignRect = Resign(p, screen, 8, 3.75)
+    resignButton = Button(resignRect.x, resignRect.y, resignRect.img, "resign")
+    resignButton.draw(screen, p)
+    
     if timed:
+        player2Clock =  Clock(p, screen, 8.3, 0)
+        player1Clock =  Clock(p, screen, 8.3, 7.5)
         player1Time = 300
         player2Time = 300
-    else:
-        player1Time = None
-        player2Time = None   
-    player1Clock.draw(player1Time)
-    player2Clock.draw(player2Time)
-    if time:
-        clock = p.time.Clock()
+        player1Clock.draw(player1Time)
+        player2Clock.draw(player2Time)
         startTime = time.time()
+        
     while running:
         clock.tick(30)
         if gs.playerToMove and timed:
@@ -79,6 +80,14 @@ def main(player, timed):
                 running = False
 
             elif e.type == p.MOUSEBUTTONDOWN:
+                
+                if resignButton.rect.collidepoint(p.mouse.get_pos()):
+                    turn, _ = utils.getTurnAlly(gs.playerToMove)
+                    text = resignRect.resign(turn)
+                    utils.endScreen("w", text)
+                    running = False
+                    break
+                
                 row, col = utils.GetMouseXY()
                 if row==-1 and col==-1:
                     continue
@@ -104,6 +113,8 @@ def main(player, timed):
                                         color = gs.enemy
                                     piece = utils.pawnPromotionMenu(move.endRow, move.endCol, color, IMAGES)
                                     gs.board[move.endRow][move.endCol] = piece
+                                    gs.boardPieces[color+'p']-=1
+                                    gs.boardPieces[piece]+=1
                             print(move.getChessNotation())
                             moveMade = True
 
@@ -116,10 +127,13 @@ def main(player, timed):
 
             if moveMade:
                 validMoves = gs.getValidMoves()
+                turn, ally = utils.getTurnAlly(gs.playerToMove)
+                (Kr, Kc) = gs.getKingLocation(ally)
+                check = isCheck(gs.board, ally, player, Kr, Kc)
+
                 if len(validMoves)==0:
-                    turn, ally = utils.getTurnAlly(gs.playerToMove)
-                    (Kr, Kc) = gs.getKingLocation(ally)
-                    check = isCheck(gs.board, ally, player, Kr, Kc)
+                    boardNotation = gs.FEN.positionTOFEN(gs.board)
+                    print(boardNotation)
                     if check:
                         running = utils.endScreen(turn, 'check')
                         break

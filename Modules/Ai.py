@@ -1,55 +1,15 @@
 import random
+from Modules.eval import Eval
 
 class Ai():
-    def __init__(self):
-        self.KWt = 20
-        self.QWt = 9
-        self.RWt = 5
-        self.BWt = 3
-        self.NWt = 3
-        self.pWt = 1
-        
-        self.weights = [self.KWt, self.QWt, self.RWt, self.BWt, self.NWt, self.pWt]
-        self.mobilityWt = 2
-  
-    def ComplexEvalCPU(self, gs):     
-        materialScore = 0
-        mobilityScore = 0
-        
-        for piece, weight in zip(gs.pieces, self.weights):
-            materialScore += (weight*(gs.boardPieces[gs.enemy+piece]-
-                gs.boardPieces[gs.player+piece]))
-        
-        if gs.playerToMove:
-            PlayerMobility = gs.getValidMoves()
-            gs.playerToMove = not gs.playerToMove
-            EnemyMobility = gs.getValidMoves()
-        else:
-            EnemyMobility = gs.getValidMoves()
-            gs.playerToMove = not gs.playerToMove
-            PlayerMobility = gs.getValidMoves()
-        
-        gs.playerToMove = not gs.playerToMove       
-        
-        mobilityScore = self.mobilityWt*(len(EnemyMobility) - len(PlayerMobility))
-        
-        Eval = materialScore + mobilityScore
-        
-        return Eval
     
-    def SimpleEval(self, gs):
-        materialScore = 0
-        
-        for piece, weight in zip(gs.pieces, self.weights):
-            materialScore += (weight*(gs.boardPieces[gs.enemy+piece]-
-                gs.boardPieces[gs.player+piece]))      
-        
-        return materialScore
+    def __init__(self):
+        self.CHECKMATE = "check"
+        self.eval = Eval()
     
     def search(self, depth, gs):
-        
         if(depth == 0):
-            return None, self.SimpleEval(gs)
+            return None, self.eval.getMaterialScore(gs)
         
         moves = gs.getValidMoves()
         maxEval = -10000
@@ -79,10 +39,12 @@ class Ai():
     def greedyBot(self, gs):
         maxEvalScore = -300
         moves = gs.getValidMoves()
+        if len(moves) == 0:
+            return None
         selectedMove = moves[random.randint(0, len(moves)-1)]
         for move in moves:
             gs.makeMove(move)
-            currScore = self.ComplexEvalCPU(gs)
+            currScore = self.eval.ComplexEvalCPU(gs)
             gs.undoMove()
             if currScore > maxEvalScore:
                 maxEvalScore = currScore

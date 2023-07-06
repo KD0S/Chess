@@ -12,6 +12,7 @@ class Button():
 
     def draw(self, screen, p):
         screen.blit(self.image, (self.rect.x, self.rect.y))
+        p.display.update(self.rect)
 
 class Clock():
     def __init__(self, p, screen, x, y):
@@ -36,6 +37,23 @@ class Clock():
     def update(self):
         self.p.display.update(self.s.get_rect())
 
+class Resign():
+    def __init__(self, p, screen, x, y):
+        self.p = p
+        self.screen = screen
+        self.SQ_SIZE = 64
+        self.OFFSET = 25
+        self.x = x*self.SQ_SIZE+self.OFFSET+20
+        self.y = y*self.SQ_SIZE+self.OFFSET
+        font = self.p.font.Font('./Assets/fonts/Poppins-Bold.ttf', 30)
+        self.img = font.render("RESIGN", True, colors.lightGreen)
+
+    def resign(self, turn):
+        if turn == "w":
+            text = "Black wins! White Resigned"
+        else:
+            text = "White wins! Black Resigned"
+        return text
 
 class Utils():
 
@@ -108,8 +126,8 @@ class Utils():
     def highlight_cells(self, cells, board, startSq, check, gs):
         self.drawBoard()
         for cell in cells:
-            self.highlight(100, colors.green, cell[1], cell[0])
-        self.highlight(100, colors.blue, startSq[1], startSq[0])
+            self.highlight(80, colors.green, cell[1], cell[0])
+        self.highlight(80, colors.blue, startSq[1], startSq[0])
         if check == True:
             self.highlight_check(gs)
 
@@ -135,12 +153,16 @@ class Utils():
                 text = "White Wins! by CheckMate"
         
         elif condition == 'material':
-                text = "Draw! Insufficient Material"
+            text = "Draw! Insufficient Material"
         
         elif condition == 'repetition':
-                text = "Draw! 3-Fold Repitition Rule"    
-        else:
+            text = "Draw! 3-Fold Repitition Rule"   
+             
+        elif condition == 'statemate':
             text = "StaleMate!"
+        
+        else:
+            text = condition
 
         textColor = (colors.black)
         font = self.p.font.Font('./Assets/fonts/Poppins-Bold.ttf', 30)
