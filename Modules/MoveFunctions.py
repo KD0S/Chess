@@ -236,7 +236,7 @@ def getKingMoves(gs, row, col, moves):
         if gs.playerToMove:
             ally = gs.player
         else: 
-            ally = "w" if gs.player == "b" else "b"
+            ally = gs.enemy
             
         # Left-Castling
         if col+1 <= 7 and col+2 <= 7 and gs.board[row][col+1] == gs.board[row][col+2] == "__":

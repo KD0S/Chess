@@ -100,7 +100,7 @@ class GameState():
                 
             elif move.pieceMoved == self.enemy+"K" and move.endCol == move.startCol-2:
                 move1 = Move((0, 0), (0, move.endCol+1), self.board)
-                self.board[0][7] = '__'
+                self.board[0][0] = '__'
                 self.board[0][move.endCol+1] = self.enemy+"R"
                 self.enemyCastle = True
                 move.qsCastling = True
@@ -155,6 +155,7 @@ class GameState():
                     self.playerCastle = False
                     self.board[move.startRow][move.startCol] = move.pieceMoved
                     self.board[move.endRow][move.endCol] = move.pieceCaptured
+                    
             elif move.pieceMoved == self.enemy+"R" and move.endCol == self.enemyKingLocation[1]-1:
                 move1 = self.moveLogs[-1]
                 if move1.pieceMoved == self.enemy+"K" and move1.endCol == move1.startCol+2:
