@@ -245,8 +245,8 @@ def getKingMoves(gs, row, col, moves):
                     if gs.playerKingMoved==0:
                         KSRook = True
                         for move in gs.moveLogs:
-                            if move.pieceMoved == gs.player+"row" and move.startRow == move.startCol == 7 or (
-                            move.pieceCaptured == gs.player+"row" and move.endRow == move.endCol == 7):
+                            if move.pieceMoved == gs.player+"R" and move.startRow == move.startCol == 7 or (
+                            move.pieceCaptured == gs.player+"R" and move.endRow == move.endCol == 7):
                                 KSRook = False
                                 break
                         if KSRook:
@@ -257,8 +257,8 @@ def getKingMoves(gs, row, col, moves):
                     if gs.enemyKingMoved==0:
                         KSRook = True
                         for move in gs.moveLogs:
-                            if move.pieceMoved == gs.enemy+"row" and move.startRow == 0 and move.startCol == 7 or (
-                            move.pieceCaptured == gs.enemy+"row" and move.endRow == 0 and move.endCol == 7):
+                            if move.pieceMoved == gs.enemy+"R" and move.startRow == 0 and move.startCol == 7 or (
+                            move.pieceCaptured == gs.enemy+"R" and move.endRow == 0 and move.endCol == 7):
                                 KSRook = False
                                 break
                         if KSRook:
@@ -270,8 +270,8 @@ def getKingMoves(gs, row, col, moves):
                 if gs.playerKingMoved==0:
                     QSRook = True
                     for move in gs.moveLogs:
-                        if move.pieceMoved == gs.player+"row" and move.startRow == 7 and move.startCol == 0 or (
-                        move.pieceCaptured == gs.player+"row" and move.endRow == 7 and  move.endCol == 0):
+                        if move.pieceMoved == gs.player+"R" and move.startRow == 7 and move.startCol == 0 or (
+                        move.pieceCaptured == gs.player+"R" and move.endRow == 7 and  move.endCol == 0):
                             QSRook = False
                             break
                     if QSRook:
@@ -281,8 +281,8 @@ def getKingMoves(gs, row, col, moves):
                 if gs.enemyKingMoved==0:
                     QSRook = True
                     for move in gs.moveLogs:
-                        if move.pieceMoved == gs.enemy+"row" and move.startRow == move.startCol == 0 or (
-                        move.pieceCaptured == gs.enemy+"row" and move.endRow == move.endCol == 0):
+                        if move.pieceMoved == gs.enemy+"R" and move.startRow == move.startCol == 0 or (
+                        move.pieceCaptured == gs.enemy+"R" and move.endRow == move.endCol == 0):
                             QSRook = False
                             break
                     if QSRook:
