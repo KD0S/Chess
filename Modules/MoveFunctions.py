@@ -265,7 +265,7 @@ def getKingMoves(gs, row, col, moves):
                             checkLeftCastleMoves(gs, ally, gs.player, row, col, moves)   
             
         # Right-Castling            
-        if col-1 >= 0 and col-2 >= 0 and col-3 >= 0 and gs.board[row][col-1] == gs.board[row][col-2] == gs.board[row][col-3] == "__":
+        if col-1 >= 0 and col-2 >= 0 and gs.board[row][col-1] == gs.board[row][col-2] == "__":
             if gs.playerToMove and not gs.playerCastle:
                 if gs.playerKingMoved==0:
                     QSRook = True
