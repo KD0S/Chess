@@ -2,7 +2,6 @@ import random
 from Modules.eval import Eval
 
 class Ai():
-    
     def __init__(self):
         self.CHECKMATE = "check"
         self.eval = Eval()

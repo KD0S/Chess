@@ -1,4 +1,5 @@
 import pygame as p
+import asyncio
 from Modules import local2player, playerCPU
 from Modules import colors
 from Modules.utils import Button, drawText
@@ -53,7 +54,7 @@ drawText(p, screen, 'Pick Your Opponent', textColor, 40, 150, 250)
 pvp = p.image.load("./Assets/images/pvp.png").convert_alpha()
 pvp = p.transform.scale(pvp, (128, 128))
 pve = p.image.load("./Assets/images/pve.png").convert_alpha()
-pve = p.transform.scale(pve, (128, 128))
+pve = p.transform.scale(pve, (120, 120))
 pveButton = Button(200, 350, pve, "K")
 pvpButton = Button(350, 350, pvp, "K")
 pveButton.draw(screen, p)
